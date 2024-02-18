@@ -12,7 +12,7 @@ LDFLAGS = -lpthread -lgtest -lgtest_main -lexpat
 
 all: directories runtests
 
-runtests: teststrutils teststrdatasource teststrdatasink testdsv testxml
+runtests: teststrutils teststrdatasource teststrdatasink testdsv testxml testosm
 
 teststrutils: $(BIN_DIR)/teststrutils
 	$(BIN_DIR)/teststrutils
@@ -28,6 +28,12 @@ testdsv: $(BIN_DIR)/testdsv
 
 testxml: $(BIN_DIR)/testxml
 	$(BIN_DIR)/testxml
+
+#testcsvbs: $(BIN_DIR)/testcsvbs			testcsvbs
+#	$(BIN_DIR)/testcsvbs
+
+testosm: $(BIN_DIR)/testosm
+	$(BIN_DIR)/testosm
 
 # String Utils
 $(BIN_DIR)/teststrutils: $(OBJ_DIR)/StringUtils.o $(OBJ_DIR)/StringUtilsTest.o
@@ -90,6 +96,26 @@ $(OBJ_DIR)/XMLWriter.o: $(SRC_DIR)/XMLWriter.cpp $(INC_DIR)/XMLWriter.h
 
 $(OBJ_DIR)/XMLTest.o: $(TEST_SRC_DIR)/XMLTest.cpp $(INC_DIR)/XMLReader.h $(INC_DIR)/XMLWriter.h
 	$(CXX) -o $@ -c $(TEST_SRC_DIR)/XMLTest.cpp $(CXXFLAGS)
+
+#CSVBus
+$(BIN_DIR)/testcsvbs: $(OBJ_DIR)/CSVBusSystemTest.o $(OBJ_DIR)/CSVBusSystem.o $(OBJ_DIR)/StringDataSource.o $(OBJ_DIR)/XMLReader.o
+	$(CXX) -o $@ $(OBJ_DIR)/CSVBusSystemTest.o $(OBJ_DIR)/CSVBusSystem.o $(OBJ_DIR)/StringDataSource.o $(OBJ_DIR)/XMLReader.o $(LDFLAGS)
+
+$(OBJ_DIR)/CSVBusSystemTest.o: $(TEST_SRC_DIR)/CSVBusSystemTest.cpp $(INC_DIR)/CSVBusSystem.h $(INC_DIR)/BusSystem.h
+	$(CXX) -o $@ -c $(TEST_SRC_DIR)/CSVBusSystemTest.cpp $(CXXFLAGS)
+
+$(OBJ_DIR)/CSVBusSystem.o: $(SRC_DIR)/CSVBusSystem.cpp $(INC_DIR)/CSVBusSystem.h $(INC_DIR)/BusSystem.h
+	$(CXX) -o $@ -c $(SRC_DIR)/CSVBusSystem.cpp $(CXXFLAGS)
+
+#OSM
+$(BIN_DIR)/testosm: $(OBJ_DIR)/OSMTest.o $(OBJ_DIR)/OpenStreetMap.o $(OBJ_DIR)/StringDataSource.o $(OBJ_DIR)/XMLReader.o
+	$(CXX) -o $@ $(OBJ_DIR)/OSMTest.o $(OBJ_DIR)/OpenStreetMap.o $(OBJ_DIR)/StringDataSource.o $(OBJ_DIR)/XMLReader.o $(LDFLAGS)
+
+$(OBJ_DIR)/OSMTest.o: $(TEST_SRC_DIR)/OSMTest.cpp $(INC_DIR)/StreetMap.h $(INC_DIR)/OpenStreetMap.h
+	$(CXX) -o $@ -c $(TEST_SRC_DIR)/OSMTest.cpp $(CXXFLAGS)
+
+$(OBJ_DIR)/OpenStreetMap.o: $(SRC_DIR)/OpenStreetMap.cpp $(INC_DIR)/StreetMap.h $(INC_DIR)/OpenStreetMap.h
+	$(CXX) -o $@ -c $(SRC_DIR)/OpenStreetMap.cpp $(CXXFLAGS)
 
 
 clean:
