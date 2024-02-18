@@ -111,7 +111,7 @@ $(OBJ_DIR)/CSVBusSystem.o: $(SRC_DIR)/CSVBusSystem.cpp $(INC_DIR)/CSVBusSystem.h
 $(BIN_DIR)/testosm: $(OBJ_DIR)/OSMTest.o $(OBJ_DIR)/OpenStreetMap.o $(OBJ_DIR)/StringDataSource.o $(OBJ_DIR)/XMLReader.o
 	$(CXX) -o $@ $(OBJ_DIR)/OSMTest.o $(OBJ_DIR)/OpenStreetMap.o $(OBJ_DIR)/StringDataSource.o $(OBJ_DIR)/XMLReader.o $(LDFLAGS)
 
-$(OBJ_DIR)/OSMTest.o: $(TEST_SRC_DIR)/OSMTest.cpp $(INC_DIR)/StreetMap.h $(INC_DIR)/OpenStreetMap.h
+$(OBJ_DIR)/OSMTest.o: $(TEST_SRC_DIR)/OSMTest.cpp $(INC_DIR)/StreetMap.h $(INC_DIR)/OpenStreetMap.h $(INC_DIR)/StreetMap.h
 	$(CXX) -o $@ -c $(TEST_SRC_DIR)/OSMTest.cpp $(CXXFLAGS)
 
 $(OBJ_DIR)/OpenStreetMap.o: $(SRC_DIR)/OpenStreetMap.cpp $(INC_DIR)/StreetMap.h $(INC_DIR)/OpenStreetMap.h

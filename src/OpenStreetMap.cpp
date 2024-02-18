@@ -4,6 +4,7 @@
 #include "XMLReader.h"
 #include "OpenStreetMap.h"
 #include <vector>
+#include <iostream>
 
 struct COpenStreetMap::SImplementation{
 
@@ -179,7 +180,8 @@ struct COpenStreetMap::SImplementation{
                     }
                     else if ((TempEntity.DNameData == "nd") && (SXMLEntity::EType::StartElement == TempEntity.DType)){
                         //WayNodes.push_back(TempEntity.AttributeValue("ref"));
-                        TNodeID DID = stoi(TempEntity.AttributeValue("ref"));
+                        TNodeID DID = stoull(TempEntity.AttributeValue("ref"));
+                        //std::cout<<DID<<std::endl;
                         NewWay->AddNode(DID);
                     }
                     else if ((TempEntity.DNameData == "tag") && (SXMLEntity::EType::StartElement == TempEntity.DType)){
