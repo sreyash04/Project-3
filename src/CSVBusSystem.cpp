@@ -88,8 +88,8 @@ struct CCSVBusSystem::SImplementation{
     std::shared_ptr<CDSVReader> RouteSrc;
     std::unordered_map<TStopID, std::shared_ptr<SStop>> Stop;       //STOPBYID
     std::unordered_map<std::string, std::shared_ptr<SRoute>> Routes;    //ROUTEBYNAME
-    std::vector<std::shared_ptr<CCSVBusSystem::SStop>> SStopByIndex;
-    std::vector<std::shared_ptr<CCSVBusSystem::SRoute>> SRouteByIndex;
+    std::vector<std::shared_ptr<CBusSystem::SStop>> SStopByIndex;
+    std::vector<std::shared_ptr<CBusSystem::SRoute>> SRouteByIndex;
 
     SImplementation(std::shared_ptr<CDSVReader> stopsrc, std::shared_ptr<CDSVReader> routesrc){
         //CDSVReader StopReader(stopsrc, ',');
@@ -98,7 +98,7 @@ struct CCSVBusSystem::SImplementation{
         std::vector<std::string> temp;
         stopsrc->ReadRow(temp);
         while(stopsrc->ReadRow(temp)){
-            std::cout<<temp[0]<<std::endl;
+            //std::cout<<temp[0]<<std::endl;
             TStopID NewStopID = stoull(temp[0]);
             uint64_t NewNodeID = stoull(temp[1]);
             auto NewStop = std::make_shared<SStop>(NewStopID, NewNodeID);
@@ -125,21 +125,36 @@ struct CCSVBusSystem::SImplementation{
 
     }
     std::size_t StopCount() const{
-        return 1;
+        return SStopByIndex.size();
     }
     std::size_t RouteCount() const{
-        return 1;
+        return SRouteByIndex.size();
     }
-    std::shared_ptr<SStop> StopByIndex(std::size_t index) const{
+    std::shared_ptr<CBusSystem::SStop> StopByIndex(std::size_t index) const{
+        if(index < SStopByIndex.size()){
+            return SStopByIndex[index];
+        }
+        return nullptr;
     }
-    std::shared_ptr<SStop> StopByID(TStopID id) const{
-
+    std::shared_ptr<CBusSystem::SStop> StopByID(TStopID id) const{
+        auto Search = Stop.find(id);
+        if(Stop.end() != Search){
+            return Search->second;
+        }
+        return nullptr;
     }
-    std::shared_ptr<SRoute> RouteByIndex(std::size_t index) const{
-
+    std::shared_ptr<CBusSystem::SRoute> RouteByIndex(std::size_t index) const{
+        if(index < SRouteByIndex.size()){
+            return SRouteByIndex[index];
+        }
+        return nullptr;
     }
-    std::shared_ptr<SRoute> RouteByName(const std::string& name) const{
-
+    std::shared_ptr<CBusSystem::SRoute> RouteByName(const std::string& name) const{
+        auto Search = Routes.find(name);
+        if(Routes.end() != Search){
+            return Search->second;
+        }
+        return nullptr;
     }
 
 

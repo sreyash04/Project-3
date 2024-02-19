@@ -24,7 +24,7 @@ TEST(CSVBusSystem, BusSystemFuncsTest){
 
     //stop and route count
     EXPECT_EQ(BusSystem2.StopCount(), 6);
-    EXPECT_EQ(BusSystem2.RouteCount(), 6);
+    EXPECT_EQ(BusSystem2.RouteCount(), 2);
 
     //STOPBYINDEX
     EXPECT_EQ(BusSystem2.StopByIndex(2)->ID(), 3);
