@@ -12,7 +12,7 @@ LDFLAGS = -lpthread -lgtest -lgtest_main -lexpat
 
 all: directories runtests
 
-runtests: teststrutils teststrdatasource teststrdatasink testdsv testxml testosm
+runtests: teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm
 
 teststrutils: $(BIN_DIR)/teststrutils
 	$(BIN_DIR)/teststrutils
@@ -29,7 +29,7 @@ testdsv: $(BIN_DIR)/testdsv
 testxml: $(BIN_DIR)/testxml
 	$(BIN_DIR)/testxml
 
-testcsvbs: $(BIN_DIR)/testcsvbs			testcsvbs
+testcsvbs: $(BIN_DIR)/testcsvbs
 	$(BIN_DIR)/testcsvbs
 
 testosm: $(BIN_DIR)/testosm
