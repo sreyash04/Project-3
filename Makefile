@@ -29,8 +29,8 @@ testdsv: $(BIN_DIR)/testdsv
 testxml: $(BIN_DIR)/testxml
 	$(BIN_DIR)/testxml
 
-#testcsvbs: $(BIN_DIR)/testcsvbs			testcsvbs
-#	$(BIN_DIR)/testcsvbs
+testcsvbs: $(BIN_DIR)/testcsvbs			testcsvbs
+	$(BIN_DIR)/testcsvbs
 
 testosm: $(BIN_DIR)/testosm
 	$(BIN_DIR)/testosm
