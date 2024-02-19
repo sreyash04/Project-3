@@ -51,17 +51,17 @@ TEST(CSVBusSystem, StopAndRouteFuncsTest){
     CCSVBusSystem BusSystem3(CSVReaderStops3, CSVReaderRoutes3);
 
     //ID
-    EXPECT_EQ(BusSystem2.StopByIndex(3)->ID(), 4);
+    EXPECT_EQ(BusSystem3.StopByIndex(3)->ID(), 4);
     //NODEID
-    EXPECT_EQ(BusSystem2.StopByIndex(2)->NodeID(), 939282);
+    EXPECT_EQ(BusSystem3.StopByIndex(2)->NodeID(), 939282);
 
     //NAME
-    EXPECT_EQ(BusSystem2.RouteByIndex(1)->Name(), "B");
+    EXPECT_EQ(BusSystem3.RouteByIndex(1)->Name(), "B");
     //STOPCOUNT
-    EXPECT_EQ(BusSystem2.RouteByIndex(1)->StopCount(), 3);
+    EXPECT_EQ(BusSystem3.RouteByIndex(1)->StopCount(), 3);
     //GETSTOPID
-    EXPECT_EQ(BusSystem2.RouteByIndex(0)->GetStopID(2), 939282);
-    EXPECT_EQ(BusSuystem2.RouteByIndex(0)->GetStopID(99), InvalidStopID);
+    EXPECT_EQ(BusSystem3.RouteByIndex(0)->GetStopID(2), 939282);
+    EXPECT_EQ(BusSystem3.RouteByIndex(0)->GetStopID(99), std::numeric_limits<uint64_t>::max());
 
 
 }

@@ -2,25 +2,25 @@
 #include "StringDataSource.h"
 #include <vector>
 #include <iostream>
-#include "CCSVBusSystem.h"
+#include "CSVBusSystem.h"
 #include "DSVReader.h"     // For reading CSV files
 #include "BusSystem.h"     // For types related to the bus system
 #include "StreetMap.h"     // For types related to the street map
 
 
 struct CCSVBusSystem::SImplementation{
-    struct SStop : public CBusSystem::SStop {
+    struct SStop : public CBusSystem::SStop{
                     //DAttributes- Attribute:Value, DAttributeKeys- Index:attribute, manipulated by member funcs
             //DID, DLocation passed on obj creation
             TStopID DID;
-            CStreetMap::TNodeID NodeID() DNodeID;
+            uint64_t DNodeID;
             std::unordered_map<std::string, std::string> DAttributes;
            
 
             //constructor
-            SStop(TStopID id, CStreetMap::TNodeID NodeID): DID(id),DNodeID(nodeID){
+            SStop(TStopID id, CStreetMap::TNodeID NodeID){
                 DID = id;
-                DNodeID = nodeID;
+                DNodeID = NodeID;
             }
             
             //deconstructor
@@ -48,10 +48,8 @@ struct CCSVBusSystem::SImplementation{
         std::vector<TStopID> ids;
             //constructor
        //notsure need to fill these both in 
-       SRoute(string name){
-                DID = id;
-                DLocation = location;
-                
+        SRoute(std::string dname){
+            name = dname;
             }
             
             //deconstructor
@@ -73,75 +71,113 @@ struct CCSVBusSystem::SImplementation{
         TStopID GetStopID(std::size_t index) const noexcept override{
         const TStopID InvalidStopID = -1;
             if (ids.size()>index) {
-            return ids[index];
-        } else {
-            return InvalidStopID;  
+                return ids[index];
+            } else {
+                return InvalidStopID;  
+            }
         }
-    }
 
-        };
+        void AddStopID(TStopID id){
+            ids.push_back(id);
+        }
+
+    };
     
 
     std::shared_ptr<CDSVReader> StopSrc;
     std::shared_ptr<CDSVReader> RouteSrc;
-    std::unordered_map<TStopID, std::shared_ptr<SStop>> Stops;
-    std::unordered_map<std::string, std::shared_ptr<SRoute>> Routes;
+    std::unordered_map<TStopID, std::shared_ptr<SStop>> Stop;       //STOPBYID
+    std::unordered_map<std::string, std::shared_ptr<SRoute>> Routes;    //ROUTEBYNAME
+    std::vector<std::shared_ptr<CCSVBusSystem::SStop>> SStopByIndex;
+    std::vector<std::shared_ptr<CCSVBusSystem::SRoute>> SRouteByIndex;
 
-    SImplementation(std::shared_ptr<CDSVReader> stopsrc, std::shared_ptr<CDSVReader> routesrc) {
+    SImplementation(std::shared_ptr<CDSVReader> stopsrc, std::shared_ptr<CDSVReader> routesrc){
+        //CDSVReader StopReader(stopsrc, ',');
+
+
+        std::vector<std::string> temp;
+        stopsrc->ReadRow(temp);
+        while(stopsrc->ReadRow(temp)){
+            std::cout<<temp[0]<<std::endl;
+            TStopID NewStopID = stoull(temp[0]);
+            uint64_t NewNodeID = stoull(temp[1]);
+            auto NewStop = std::make_shared<SStop>(NewStopID, NewNodeID);
+            SStopByIndex.push_back(NewStop);
+            Stop[NewStopID] = NewStop;
+
+        }
+
+        //CDSVReader RouteReader(routesrc, ',');
+        routesrc->ReadRow(temp);
+        while(routesrc->ReadRow(temp)){
+            std::string NewRouteName = temp[0];
+            TStopID ThisStopID = stoull(temp[1]);
+
+            if(Routes.count(NewRouteName) == 0){
+                auto NewRoute = std::make_shared<SRoute>(NewRouteName);
+                SRouteByIndex.push_back(NewRoute);
+                Routes[NewRouteName] = NewRoute;
+            }
+
+            auto thisRoute = Routes.find(NewRouteName)->second;
+            thisRoute->AddStopID(ThisStopID);
+        }
 
     }
-    std::size_t CCSVBusSystem::StopCount() const{
-
+    std::size_t StopCount() const{
+        return 1;
+    }
+    std::size_t RouteCount() const{
+        return 1;
+    }
+    std::shared_ptr<SStop> StopByIndex(std::size_t index) const{
+    }
+    std::shared_ptr<SStop> StopByID(TStopID id) const{
 
     }
-    std::size_t CCSVBusSystem::RouteCount() const{
+    std::shared_ptr<SRoute> RouteByIndex(std::size_t index) const{
 
     }
-    std::shared_ptr<CBusSystem::SStop> CCSVBusSystem::StopByIndex(std::size_t index) const{
-
-    }
-    std::shared_ptr<CBusSystem::SStop> CCSVBusSystem::StopByID(TStopID id) const{
-
-    }
-    std::shared_ptr<CBusSystem::SRoute> CCSVBusSystem::RouteByIndex(std::size_t index) const{
-
-    }
-    std::shared_ptr<CBusSystem::SRoute> CCSVBusSystem::RouteByName(const std::string& name) const{
+    std::shared_ptr<SRoute> RouteByName(const std::string& name) const{
 
     }
 
 
     
 };
+
+
+
 //Constructor
-CCSVBusSystem(std::shared_ptr< CDSVReader > stopsrc, std::shared_ptr<CDSVReader > routesrc){
-    DImplementation = std::make_unique<SImplementation>(src);
+CCSVBusSystem::CCSVBusSystem(std::shared_ptr< CDSVReader > stopsrc, std::shared_ptr<CDSVReader > routesrc){
+    DImplementation = std::make_unique<SImplementation>(stopsrc, routesrc);
 }
 //Deconstructor
 CCSVBusSystem::~CCSVBusSystem(){
 }
 
 std::size_t CCSVBusSystem::StopCount() const noexcept {
-    }
+    return DImplementation->StopCount();
+}
 
 std::size_t CCSVBusSystem::RouteCount() const noexcept {
+    return DImplementation->RouteCount();
 }
 
 std::shared_ptr<CBusSystem::SStop> CCSVBusSystem::StopByIndex(std::size_t index) const noexcept {
-    
+    return DImplementation->StopByIndex(index);
 }
 
 std::shared_ptr<CBusSystem::SStop> CCSVBusSystem::StopByID(TStopID id) const noexcept {
-    
+    return DImplementation->StopByID(id);
 }
 
 std::shared_ptr<CBusSystem::SRoute> CCSVBusSystem::RouteByIndex(std::size_t index) const noexcept {
-    
+    return DImplementation->RouteByIndex(index);
 }
 
 std::shared_ptr<CBusSystem::SRoute> CCSVBusSystem::RouteByName(const std::string& name) const noexcept {
-
-   
+    return DImplementation->RouteByName(name);
 }
 
 
