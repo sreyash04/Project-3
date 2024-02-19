@@ -77,6 +77,7 @@ struct CCSVBusSystem::SImplementation{
             }
         }
 
+        //adds a stopID to the ids vector, formally adding a stop to the route
         void AddStopID(TStopID id){
             ids.push_back(id);
         }
@@ -92,13 +93,13 @@ struct CCSVBusSystem::SImplementation{
     std::vector<std::shared_ptr<CBusSystem::SRoute>> SRouteByIndex;
 
     SImplementation(std::shared_ptr<CDSVReader> stopsrc, std::shared_ptr<CDSVReader> routesrc){
-        //CDSVReader StopReader(stopsrc, ',');
-
-
         std::vector<std::string> temp;
+
+        //read first row cuz its data col headers, not data
         stopsrc->ReadRow(temp);
+
+        //keep reading in rows, for each row create a new stop object, add it to SStopByIndex and Stop do it can be indexed and searhced
         while(stopsrc->ReadRow(temp)){
-            //std::cout<<temp[0]<<std::endl;
             TStopID NewStopID = stoull(temp[0]);
             uint64_t NewNodeID = stoull(temp[1]);
             auto NewStop = std::make_shared<SStop>(NewStopID, NewNodeID);
@@ -107,35 +108,44 @@ struct CCSVBusSystem::SImplementation{
 
         }
 
-        //CDSVReader RouteReader(routesrc, ',');
+        //Read first row cuz it is column headers, and not data
         routesrc->ReadRow(temp);
+
+        //keep reading in columns, grab route name and stop id from row
         while(routesrc->ReadRow(temp)){
             std::string NewRouteName = temp[0];
             TStopID ThisStopID = stoull(temp[1]);
 
+            //if the route doesnt already exist in the bus system, create a new route, and add it to be indexed and searched
             if(Routes.count(NewRouteName) == 0){
                 auto NewRoute = std::make_shared<SRoute>(NewRouteName);
                 SRouteByIndex.push_back(NewRoute);
                 Routes[NewRouteName] = NewRoute;
             }
 
+            //find the current route in the Routes map, and call the route's AddStopID func to add the stop to the route
             auto thisRoute = Routes.find(NewRouteName)->second;
             thisRoute->AddStopID(ThisStopID);
         }
 
     }
+
+    //return number of stops
     std::size_t StopCount() const{
         return SStopByIndex.size();
     }
+    //return number of routes
     std::size_t RouteCount() const{
         return SRouteByIndex.size();
     }
+    //if index in range, return shared ptr to SStop obj, otherwise nullptr
     std::shared_ptr<CBusSystem::SStop> StopByIndex(std::size_t index) const{
         if(index < SStopByIndex.size()){
             return SStopByIndex[index];
         }
         return nullptr;
     }
+    //if id exists, return shared ptr to SStop obj, otherwise nullptr
     std::shared_ptr<CBusSystem::SStop> StopByID(TStopID id) const{
         auto Search = Stop.find(id);
         if(Stop.end() != Search){
@@ -143,12 +153,14 @@ struct CCSVBusSystem::SImplementation{
         }
         return nullptr;
     }
+    //if index in range, return shared ptr to SRoute obj, otherwise nullptr
     std::shared_ptr<CBusSystem::SRoute> RouteByIndex(std::size_t index) const{
         if(index < SRouteByIndex.size()){
             return SRouteByIndex[index];
         }
         return nullptr;
     }
+    //if name exists, return shared ptr to SRoute obj, otherwise nullptr
     std::shared_ptr<CBusSystem::SRoute> RouteByName(const std::string& name) const{
         auto Search = Routes.find(name);
         if(Routes.end() != Search){
