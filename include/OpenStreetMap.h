@@ -21,4 +21,6 @@ class COpenStreetMap : public CStreetMap{
         std::shared_ptr<CStreetMap::SWay> WayByID(TWayID id) const noexcept override;
 };
 
+
+
 #endif
