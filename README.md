@@ -1,8 +1,6 @@
 # Project-3
-
-# Project-3
-# ECS34Project2
 Sreyash Ravinuthala (920484337)
+Jack Kriner (919303306)
 # Project Status: Complete
 
 # Known Issues: None
